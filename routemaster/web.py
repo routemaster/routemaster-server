@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import datetime
 import json
 
@@ -27,8 +28,7 @@ from .db import Waypoint
 app = flask.Flask("routemaster")
 
 def camel(s):
-    return "".join(b.upper() if a == "_" else b for a, b in zip(" " + s, s)
-                   if b != "_")
+    return re.sub(r"_(.)?", lambda m: (m.group(1) or "").upper(), s)
 
 def db_response(db_objects):
     return json_response(db_to_json(db_objects))

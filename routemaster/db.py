@@ -11,6 +11,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
+
 import datetime
 
 from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String
@@ -39,7 +40,7 @@ class Journey(SABase):
     def __repr__(self):
         return ("<Journey id={s.id} user={s.user!r} "
                 "start_time={s.start_time!r}>"
-                "".format(s=self))
+                .format(s=self))
 
 class Location(SABase):
     """A named place on the map from which a journey can start or end"""
@@ -54,7 +55,7 @@ class Location(SABase):
     def __repr__(self):
         return ("<Location id={s.id} name={s.name!r} "
                 "external_id={s.external_id!r}>"
-                "".format(s=self))
+                .format(s=self))
 
 class Route(SABase):
     """An oft-journeyed pair of locations that has a high score list"""
@@ -68,7 +69,7 @@ class Route(SABase):
     def __repr__(self):
         return ("<Route id={s.id} start_location={s.start_location!r} "
                 "end_location={s.end_location!r}>"
-                "".format(s=self))
+                .format(s=self))
 
 class User(SABase):
     """A person who uses RouteMaster"""
@@ -84,7 +85,7 @@ class User(SABase):
 
     def __repr__(self):
         return ("<User id={s.id} name={s.name!r} external_id={s.external_id!r}>"
-                "".format(s=self))
+                .format(s=self))
 
 class Waypoint(SABase):
     """A single datapoint recorded during a journey"""
@@ -100,4 +101,4 @@ class Waypoint(SABase):
 
     def __repr__(self):
         return ("<Waypoint id={s.id} journey={s.journey!r} time={s.time!r}>"
-                "".format(s=self))
+                .format(s=self))
