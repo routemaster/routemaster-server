@@ -22,7 +22,7 @@ SABase = declarative_base()
 SASession = sessionmaker()
 
 class Journey(SABase):
-    """A particular instance of walking from one location to another"""
+    """A particular instance of walking from one Place to another"""
     __tablename__ = "journey"
     id = Column(Integer, primary_key=True)
     user = relationship("User", back_populates="journeys")
@@ -31,10 +31,10 @@ class Journey(SABase):
     end_time = Column(DateTime)
     distance_m = Column(Integer)
     efficiency = Column(Integer)
-    start_location_id = Column(Integer, ForeignKey("location.id"))
-    start_location = relationship("Location", foreign_keys=start_location_id)
-    end_location_id = Column(Integer, ForeignKey("location.id"))
-    end_location = relationship("Location", foreign_keys=end_location_id)
+    start_place_id = Column(Integer, ForeignKey("place.id"))
+    start_place = relationship("Place", foreign_keys=start_place_id)
+    end_place_id = Column(Integer, ForeignKey("place.id"))
+    end_place = relationship("Place", foreign_keys=end_place_id)
     waypoints = relationship("Waypoint", back_populates="journey")
 
     def __repr__(self):
@@ -42,9 +42,9 @@ class Journey(SABase):
                 "start_time={s.start_time!r}>"
                 .format(s=self))
 
-class Location(SABase):
-    """A named place on the map from which a journey can start or end"""
-    __tablename__ = "location"
+class Place(SABase):
+    """A named place on the map from which a Journey can start or end"""
+    __tablename__ = "place"
     id = Column(Integer, primary_key=True)
     name = Column(String)
     latitude = Column(Float)
@@ -53,22 +53,22 @@ class Location(SABase):
     external_id = Column(String)
 
     def __repr__(self):
-        return ("<Location id={s.id} name={s.name!r} "
+        return ("<Place id={s.id} name={s.name!r} "
                 "external_id={s.external_id!r}>"
                 .format(s=self))
 
 class Route(SABase):
-    """An oft-journeyed pair of locations that has a high score list"""
+    """An oft-journeyed pair of Places that has a high score list"""
     __tablename__ = "route"
     id = Column(Integer, primary_key=True)
-    start_location_id = Column(Integer, ForeignKey("location.id"))
-    start_location = relationship("Location", foreign_keys=start_location_id)
-    end_location_id = Column(Integer, ForeignKey("location.id"))
-    end_location = relationship("Location", foreign_keys=end_location_id)
+    start_place_id = Column(Integer, ForeignKey("place.id"))
+    start_place = relationship("Place", foreign_keys=start_place_id)
+    end_place_id = Column(Integer, ForeignKey("place.id"))
+    end_place = relationship("Place", foreign_keys=end_place_id)
 
     def __repr__(self):
-        return ("<Route id={s.id} start_location={s.start_location!r} "
-                "end_location={s.end_location!r}>"
+        return ("<Route id={s.id} start_place={s.start_place!r} "
+                "end_place={s.end_place!r}>"
                 .format(s=self))
 
 class User(SABase):
@@ -88,7 +88,7 @@ class User(SABase):
                 .format(s=self))
 
 class Waypoint(SABase):
-    """A single datapoint recorded during a journey"""
+    """A single datapoint recorded during a Journey"""
     __tablename__ = "waypoint"
     id = Column(Integer, primary_key=True)
     journey_id = Column(Integer, ForeignKey("journey.id"))

@@ -20,7 +20,7 @@ import flask
 from flask import g
 
 from .db import Journey
-from .db import Location
+from .db import Place
 from .db import Route
 from .db import SASession
 from .db import User
@@ -77,8 +77,8 @@ def store_journey():
         user_id=data['userId'],
         start_time=data['startTime'],
         end_time=data['endTime'],
-        start_location_id=data['startLocationId'],
-        end_location_id=data['endLocationId'],
+        start_place_id=data['startPlaceId'],
+        end_place_id=data['endPlaceId'],
     )
     g.db.add(journey)
     g.db.commit()
@@ -104,9 +104,9 @@ def get_journey(jid):
     return db_response(get_or_404(Journey, id=jid))
 
 
-@app.route("/location/<int:lid>")
-def get_location(lid):
-    return db_response(get_or_404(Location, id=lid))
+@app.route("/place/<int:lid>")
+def get_place(lid):
+    return db_response(get_or_404(Place, id=lid))
 
 
 @app.route("/route/<int:rid>")
