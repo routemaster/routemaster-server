@@ -14,8 +14,16 @@
 
 import datetime
 
-from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy import Boolean
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import Enum
+from sqlalchemy import Float
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy.orm import relationship
+from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 SABase = declarative_base()
@@ -27,6 +35,7 @@ class Journey(SABase):
     id = Column(Integer, primary_key=True)
     user = relationship("User", back_populates="journeys")
     user_id = Column(Integer, ForeignKey("user.id"))
+    visibility = Column(Enum("public", "friends", "private"))
     start_time = Column(DateTime)
     end_time = Column(DateTime)
     distance_m = Column(Integer)
