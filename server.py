@@ -21,11 +21,9 @@ Options:
   --debug      Run with Flask in debug mode
 """
 import logging
-import os.path
 
 import docopt
 import routemaster
-import sqlalchemy
 import tornado.httpserver
 import tornado.wsgi
 
@@ -47,24 +45,8 @@ logger.setLevel(logging.INFO)
 if debug:
     logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
-# The following line does really have the correct number of slashes;
-# an absolute path would require four total. See
-# http://docs.sqlalchemy.org/en/rel_0_9/core/engines.html#sqlite
-engine = sqlalchemy.create_engine('sqlite:///{}'.format(database_file))
-routemaster.db.SASession.configure(bind=engine)
-
-# Initialize database if it doesn't exist
-if not os.path.exists(database_file):
-    logger.info("Initializing database {}".format(database_file))
-    routemaster.db.SABase.metadata.create_all(engine)
-    logger.info("Initalized database")
-
-    db = routemaster.db.SASession()
-    test = routemaster.db.User(name="Hermann Dorkschneider",
-                               email="fakeaddress@lumeh.org")
-    db.add(test)
-    db.commit()
-    logger.info("Created test user {}".format(test))
+logger.info("Initializing database {}".format(database_file))
+routemaster.db.initialize(database_file)
 
 if debug:
     logger.info("Starting Flask debug server on {host}:{port}".format(

@@ -13,9 +13,12 @@
 # limitations under the License.
 
 import datetime
+import logging
+import os.path
 
 from sqlalchemy import Boolean
 from sqlalchemy import Column
+from sqlalchemy import create_engine
 from sqlalchemy import DateTime
 from sqlalchemy import Enum
 from sqlalchemy import Float
@@ -26,8 +29,10 @@ from sqlalchemy.orm import relationship
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
+logger = logging.getLogger("routemaster.db")
 SABase = declarative_base()
 SASession = sessionmaker()
+sa_engine = None
 
 class Journey(SABase):
     """A particular instance of walking from one Place to another"""
@@ -111,3 +116,35 @@ class Waypoint(SABase):
     def __repr__(self):
         return ("<Waypoint id={s.id} journey={s.journey!r} time={s.time!r}>"
                 .format(s=self))
+
+def initialize(database_file):
+    # The following line does really have the correct number of slashes;
+    # an absolute path would require four total. See
+    # http://docs.sqlalchemy.org/en/rel_0_9/core/engines.html#sqlite
+    global engine
+    engine = create_engine('sqlite:///{}'.format(database_file))
+    SASession.configure(bind=engine)
+
+    # Initialize database if it doesn't exist
+    if not os.path.exists(database_file):
+        SABase.metadata.create_all(engine)
+        logger.info("Initalized database")
+
+        db = SASession()
+
+        café_chan = Place(name="Café Chan",
+                          latitude=29.65782,
+                          longitude=-82.34215)
+        einstein = Place(name="Einstein Bagels",
+                         latitude=29.64814,
+                         longitude=-82.34524)
+        hermann = User(name="Hermann Dorkschneider",
+                       email="fakeaddress@lumeh.org")
+
+        db.add(café_chan)
+        db.add(einstein)
+        db.add(hermann)
+        db.commit()
+        logger.info("Created Place {}".format(café_chan))
+        logger.info("Created Place {}".format(einstein))
+        logger.info("Created User {}".format(hermann))
