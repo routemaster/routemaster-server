@@ -47,7 +47,8 @@ def db_to_json(objects):
                 value = value.isoformat()
             obj_dict[camel(column.name)] = value
         data.append(obj_dict)
-    return json.dumps(data[0] if not is_a_list else data, indent=2)
+    return json.dumps(data[0] if not is_a_list else data,
+                      indent=2, ensure_ascii=False)
 
 def get_or_404(type, **kwargs):
     q = g.db.query(type).filter_by(**kwargs).first()
@@ -57,7 +58,7 @@ def get_or_404(type, **kwargs):
 
 def json_response(s):
     response = flask.make_response(s)
-    response.headers["content-type"] = "application/json"
+    response.headers["content-type"] = "application/json; charset=utf-8"
     return response
 
 @app.before_request
