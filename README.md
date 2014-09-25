@@ -46,7 +46,7 @@ use to determine how certain requests are handled.
           "endPlaceId": ...,
           "waypoints": [
             {
-              "time": ...,
+              "timeUtc": ...,
               "accuracyM": ...,
               "latitude": ...,
               "longitude": ...,

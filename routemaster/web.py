@@ -76,8 +76,8 @@ def store_journey():
     data = request.json
     journey = Journey(
         user_id=data['userId'],
-        start_time=data['startTime'],
-        end_time=data['endTime'],
+        start_time_utc=data['startTimeUtc'],
+        end_time_utc=data['endTimeUtc'],
         start_place_id=data['startPlaceId'],
         end_place_id=data['endPlaceId'],
     )
@@ -87,7 +87,7 @@ def store_journey():
     for w in data['waypoints']:
         waypoint = Waypoint(
             journey_id=journey.id,
-            time=w['time'],
+            time_utc=w['timeUtc'],
             accuracy_m=w['accuracyM'],
             latitude=w['latitude'],
             longitude=w['longitude'],
@@ -122,5 +122,5 @@ def get_user(uid):
 @app.route("/user/<int:uid>/recent")
 def get_user_recent_journeys(uid):
     query = (g.db.query(Journey).filter_by(user_id=uid)
-             .order_by(desc(Journey.start_time)))
+             .order_by(desc(Journey.start_time_utc)))
     return db_response(query.all())

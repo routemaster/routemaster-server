@@ -41,8 +41,8 @@ class Journey(SABase):
     user = relationship("User", back_populates="journeys")
     user_id = Column(Integer, ForeignKey("user.id"))
     visibility = Column(Enum("public", "friends", "private"))
-    start_time = Column(DateTime)
-    end_time = Column(DateTime)
+    start_time_utc = Column(DateTime)
+    end_time_utc = Column(DateTime)
     distance_m = Column(Integer)
     efficiency = Column(Integer)
     start_place_id = Column(Integer, ForeignKey("place.id"))
@@ -53,7 +53,7 @@ class Journey(SABase):
 
     def __repr__(self):
         return ("<Journey id={s.id} user={s.user!r} "
-                "start_time={s.start_time!r}>"
+                "start_time_utc={s.start_time_utc!r}>"
                 .format(s=self))
 
 class Place(SABase):
@@ -91,8 +91,8 @@ class User(SABase):
     id = Column(Integer, primary_key=True)
     name = Column(String)
     email = Column(String)
-    creation_time = Column(DateTime, default=datetime.datetime.utcnow)
-    last_login_time = Column(DateTime)
+    creation_time_utc = Column(DateTime, default=datetime.datetime.utcnow)
+    last_login_time_utc = Column(DateTime)
     total_distance = Column(Integer, default=0)
     journeys = relationship("Journey", back_populates="user")
     external_id = Column(String)
@@ -107,14 +107,15 @@ class Waypoint(SABase):
     id = Column(Integer, primary_key=True)
     journey_id = Column(Integer, ForeignKey("journey.id"))
     journey = relationship("Journey", back_populates="waypoints")
-    time = Column(DateTime)
+    time_utc = Column(DateTime)
     accuracy_m = Column(Float)
     latitude = Column(Float)
     longitude = Column(Float)
     height_m = Column(Float)
 
     def __repr__(self):
-        return ("<Waypoint id={s.id} journey={s.journey!r} time={s.time!r}>"
+        return ("<Waypoint id={s.id} journey={s.journey!r} "
+                "time_utc={s.time_utc!r}>"
                 .format(s=self))
 
 def initialize(database_file):

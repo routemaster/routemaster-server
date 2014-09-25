@@ -53,20 +53,20 @@ class TestJourney(RMTestCase):
         then = now - datetime.timedelta(seconds=30)
         data = {
             "userId": 1,
-            "startTime": then.isoformat(),
-            "endTime": now.isoformat(),
+            "startTimeUtc": then.isoformat(),
+            "endTimeUtc": now.isoformat(),
             "distanceM": 5,
             "efficiency": 20,
             "waypoints": [
                 {
-                    "time": then.isoformat(),
+                    "timeUtc": then.isoformat(),
                     "accuracyM": 2.71,
                     "latitude": 3.14159,
                     "longitude": 1.618,
                     "heightM": 10,
                 },
                 {
-                    "time": now.isoformat(),
+                    "timeUtc": now.isoformat(),
                     "accuracyM": 2.71,
                     "latitude": 3.14159,
                     "longitude": 1.618,
@@ -90,7 +90,7 @@ class TestJsonFunctions(RMTestCase):
         w = routemaster.db.Waypoint(
             id=5,
             journey_id=7,
-            time=now,
+            time_utc=now,
             accuracy_m=9.04,
             latitude=7.3,
             longitude=2.0,
@@ -99,7 +99,7 @@ class TestJsonFunctions(RMTestCase):
         data = json.loads(routemaster.web.db_to_json(w))
         self.assertEqual(data["id"], 5)
         self.assertEqual(data["journeyId"], 7)
-        self.assertEqual(data["time"], now.isoformat())
+        self.assertEqual(data["timeUtc"], now.isoformat())
         self.assertEqual(data["accuracyM"], 9.04)
         self.assertEqual(data["latitude"], 7.3)
         self.assertEqual(data["longitude"], 2.0)
