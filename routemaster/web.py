@@ -82,11 +82,11 @@ def store_journey():
         end_place_id=data['endPlaceId'],
     )
     g.db.add(journey)
-    g.db.commit()
 
+    waypoints = []
     for w in data['waypoints']:
         waypoint = Waypoint(
-            journey_id=journey.id,
+            journey=journey,
             time_utc=w['timeUtc'],
             accuracy_m=w['accuracyM'],
             latitude=w['latitude'],
@@ -94,8 +94,16 @@ def store_journey():
             height_m=w['height_m'],
         )
         g.db.add(waypoint)
+        waypoints.append(waypoint)
+
+    if len(waypoints) < 3:
+        # return 400 Bad Request?
+        ...
+    g.db.commit()
 
     # TODO: Calculate journey scores and distance
+    for w1, w2 in zip(waypoints, waypoints[1:]):
+        ...
 
     g.db.commit()
     return db_response(journey)

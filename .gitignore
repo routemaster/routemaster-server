@@ -1,3 +1,4 @@
 env
 rm_server.egg-info
 __pycache__
+*.pyc
