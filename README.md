@@ -1,8 +1,14 @@
-# Setup
+# Local setup
 
     $ virtualenv3 env
     $ env/bin/pip install -e .
     $ env/bin/debug-server.py /tmp/routemaster-db
+
+# Deploying to routemaster.lumeh.org
+
+Install Fabric on your system and run
+
+    $ fab deploy
 
 # API
 
