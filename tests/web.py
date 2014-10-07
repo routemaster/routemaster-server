@@ -20,24 +20,10 @@ import routemaster
 from routemaster import web
 import sqlalchemy
 
-db_initialized = False
-
 
 class RMTestCase(unittest.TestCase):
     def setUp(self):
-        global db_initialized
-        if not db_initialized:
-            engine = sqlalchemy.create_engine("sqlite://")
-            routemaster.db.SASession.configure(bind=engine)
-            routemaster.db.SABase.metadata.create_all(engine)
-
-            # Add a test user
-            db = routemaster.db.SASession()
-            test = routemaster.db.User(name="Hermann Dorkschneider",
-                                       email="fakeaddress@lumeh.org")
-            db.add(test)
-            db.commit()
-
+        routemaster.db.initialize_sqlite_memory()
         self.app = routemaster.web.app.test_client()
 
 
@@ -74,7 +60,7 @@ class TestJourney(RMTestCase):
                 },
             ],
         }
-        r = self.app.post("/journey", data=data)
+        r = self.app.post("/journey", data=json.dumps(data))
         self.assertTrue(r.status.startswith("2"), msg="non-2xx response")
 
 

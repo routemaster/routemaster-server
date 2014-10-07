@@ -13,9 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """
-usage: server.py [--host HOST] [--port PORT] DATABASE_FILE
+usage: server.py [--debug] [--host HOST] [--port PORT] DATABASE_FILE
 
 Options:
+  --debug
   --host HOST  [default: localhost]
   --port PORT  [default: 8000]
 """
@@ -25,18 +26,20 @@ import docopt
 import routemaster
 
 args = docopt.docopt(__doc__)
+debug = args['--debug']
 host = args['--host']
 port = int(args['--port'])
 database_file = args['DATABASE_FILE']
 
-# Enable log messages from SQLAlchemy engine
-logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+if debug:
+    # Enable log messages from SQLAlchemy engine
+    logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
 
 logger = logging.getLogger()
 
 logger.info("Initializing database {}".format(database_file))
-routemaster.db.initialize(database_file)
+routemaster.db.initialize_sqlite(database_file)
 
 logger.info("Starting Flask debug server on {host}:{port}".format(
     host=host, port=port))
-routemaster.web.app.run(host, port, debug=True)
+routemaster.web.app.run(host, port, debug=debug)

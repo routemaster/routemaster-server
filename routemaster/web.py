@@ -18,6 +18,7 @@ import re
 
 import flask
 from flask import g
+from flask import request
 
 from .db import Journey
 from .db import Place
