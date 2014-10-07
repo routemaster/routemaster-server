@@ -113,9 +113,9 @@ def get_journey(jid):
     return db_response(get_or_404(Journey, id=jid))
 
 
-@app.route("/place/<int:lid>")
-def get_place(lid):
-    return db_response(get_or_404(Place, id=lid))
+@app.route("/place/<int:pid>")
+def get_place(pid):
+    return db_response(get_or_404(Place, id=pid))
 
 
 @app.route("/route/<int:rid>")
