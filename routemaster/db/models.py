@@ -14,21 +14,28 @@
 
 import datetime
 
-from sqlalchemy import Column, DateTime, Float, ForeignKey, Integer, String
-from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy import Boolean
+from sqlalchemy import Column
+from sqlalchemy import DateTime
+from sqlalchemy import Enum
+from sqlalchemy import Float
+from sqlalchemy import ForeignKey
+from sqlalchemy import Integer
+from sqlalchemy import String
+from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
 
-SABase = declarative_base()
-SASession = sessionmaker()
+Base = declarative_base()
 
-class Journey(SABase):
+class Journey(Base):
     """A particular instance of walking from one Place to another"""
     __tablename__ = "journey"
     id = Column(Integer, primary_key=True)
     user = relationship("User", back_populates="journeys")
     user_id = Column(Integer, ForeignKey("user.id"))
-    start_time = Column(DateTime)
-    end_time = Column(DateTime)
+    visibility = Column(Enum("public", "friends", "private"))
+    start_time_utc = Column(DateTime)
+    end_time_utc = Column(DateTime)
     distance_m = Column(Integer)
     efficiency = Column(Integer)
     start_place_id = Column(Integer, ForeignKey("place.id"))
@@ -39,10 +46,10 @@ class Journey(SABase):
 
     def __repr__(self):
         return ("<Journey id={s.id} user={s.user!r} "
-                "start_time={s.start_time!r}>"
+                "start_time_utc={s.start_time_utc!r}>"
                 .format(s=self))
 
-class Place(SABase):
+class Place(Base):
     """A named place on the map from which a Journey can start or end"""
     __tablename__ = "place"
     id = Column(Integer, primary_key=True)
@@ -57,7 +64,7 @@ class Place(SABase):
                 "external_id={s.external_id!r}>"
                 .format(s=self))
 
-class Route(SABase):
+class Route(Base):
     """An oft-journeyed pair of Places that has a high score list"""
     __tablename__ = "route"
     id = Column(Integer, primary_key=True)
@@ -71,14 +78,14 @@ class Route(SABase):
                 "end_place={s.end_place!r}>"
                 .format(s=self))
 
-class User(SABase):
+class User(Base):
     """A person who uses RouteMaster"""
     __tablename__ = "user"
     id = Column(Integer, primary_key=True)
     name = Column(String)
     email = Column(String)
-    creation_time = Column(DateTime, default=datetime.datetime.utcnow)
-    last_login_time = Column(DateTime)
+    creation_time_utc = Column(DateTime, default=datetime.datetime.utcnow)
+    last_login_time_utc = Column(DateTime)
     total_distance = Column(Integer, default=0)
     journeys = relationship("Journey", back_populates="user")
     external_id = Column(String)
@@ -87,18 +94,19 @@ class User(SABase):
         return ("<User id={s.id} name={s.name!r} external_id={s.external_id!r}>"
                 .format(s=self))
 
-class Waypoint(SABase):
+class Waypoint(Base):
     """A single datapoint recorded during a Journey"""
     __tablename__ = "waypoint"
     id = Column(Integer, primary_key=True)
     journey_id = Column(Integer, ForeignKey("journey.id"))
     journey = relationship("Journey", back_populates="waypoints")
-    time = Column(DateTime)
+    time_utc = Column(DateTime)
     accuracy_m = Column(Float)
     latitude = Column(Float)
     longitude = Column(Float)
     height_m = Column(Float)
 
     def __repr__(self):
-        return ("<Waypoint id={s.id} journey={s.journey!r} time={s.time!r}>"
+        return ("<Waypoint id={s.id} journey={s.journey!r} "
+                "time_utc={s.time_utc!r}>"
                 .format(s=self))
