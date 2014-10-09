@@ -12,22 +12,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Database models and helper functions for the RouteMaster server.
-
-Before using this module, one of the initialize_* methods needs to be
-called. (Only the first initialize_* method called will have an effect,
-so you can safely call them multiple times if you want to.)
-
-After initializing, create an instance of SASession to access the
-database.
-"""
 import datetime
-import logging
-import os.path
 
 from sqlalchemy import Boolean
 from sqlalchemy import Column
-from sqlalchemy import create_engine
 from sqlalchemy import DateTime
 from sqlalchemy import Enum
 from sqlalchemy import Float
@@ -35,15 +23,11 @@ from sqlalchemy import ForeignKey
 from sqlalchemy import Integer
 from sqlalchemy import String
 from sqlalchemy.orm import relationship
-from sqlalchemy.orm import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
-logger = logging.getLogger("routemaster.db")
-SABase = declarative_base()
-SASession = sessionmaker()
-engine = None
+Base = declarative_base()
 
-class Journey(SABase):
+class Journey(Base):
     """A particular instance of walking from one Place to another"""
     __tablename__ = "journey"
     id = Column(Integer, primary_key=True)
@@ -65,7 +49,7 @@ class Journey(SABase):
                 "start_time_utc={s.start_time_utc!r}>"
                 .format(s=self))
 
-class Place(SABase):
+class Place(Base):
     """A named place on the map from which a Journey can start or end"""
     __tablename__ = "place"
     id = Column(Integer, primary_key=True)
@@ -80,7 +64,7 @@ class Place(SABase):
                 "external_id={s.external_id!r}>"
                 .format(s=self))
 
-class Route(SABase):
+class Route(Base):
     """An oft-journeyed pair of Places that has a high score list"""
     __tablename__ = "route"
     id = Column(Integer, primary_key=True)
@@ -94,7 +78,7 @@ class Route(SABase):
                 "end_place={s.end_place!r}>"
                 .format(s=self))
 
-class User(SABase):
+class User(Base):
     """A person who uses RouteMaster"""
     __tablename__ = "user"
     id = Column(Integer, primary_key=True)
@@ -110,7 +94,7 @@ class User(SABase):
         return ("<User id={s.id} name={s.name!r} external_id={s.external_id!r}>"
                 .format(s=self))
 
-class Waypoint(SABase):
+class Waypoint(Base):
     """A single datapoint recorded during a Journey"""
     __tablename__ = "waypoint"
     id = Column(Integer, primary_key=True)
@@ -126,50 +110,3 @@ class Waypoint(SABase):
         return ("<Waypoint id={s.id} journey={s.journey!r} "
                 "time_utc={s.time_utc!r}>"
                 .format(s=self))
-
-def _populate():
-    """Insert some default objects into the database.
-
-    This function will throw errors if the database has already been
-    populated, so avoid calling it multiple times.
-    """
-    SABase.metadata.create_all(engine)
-    logger.info("Initalized database")
-    db = SASession()
-    café_chan = Place(name="Café Chan",
-                      latitude=29.65782,
-                      longitude=-82.34215)
-    einstein = Place(name="Einstein Bagels",
-                     latitude=29.64814,
-                     longitude=-82.34524)
-    hermann = User(name="Hermann Dorkschneider",
-                   email="fakeaddress@lumeh.org")
-    db.add(café_chan)
-    db.add(einstein)
-    db.add(hermann)
-    db.commit()
-    logger.info("Created Place {}".format(café_chan))
-    logger.info("Created Place {}".format(einstein))
-    logger.info("Created User {}".format(hermann))
-
-def initialize_sqlite(database_file):
-    """Initialize this module to use an on-disk sqlite database."""
-    global engine
-    if engine is None:
-        # The following line does really have the correct number of slashes;
-        # an absolute path would require four total. See
-        # http://docs.sqlalchemy.org/en/rel_0_9/core/engines.html#sqlite
-        engine = create_engine("sqlite:///{}".format(database_file))
-        SASession.configure(bind=engine)
-
-        # Populate the database if it doesn't already exist on disk
-        if not os.path.exists(database_file):
-            _populate()
-
-def initialize_sqlite_memory():
-    """Initialize this module to use an in-memory sqlite database."""
-    global engine
-    if engine is None:
-        engine = create_engine("sqlite://")
-        SASession.configure(bind=engine)
-        _populate()

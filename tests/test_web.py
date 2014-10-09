@@ -14,17 +14,12 @@
 
 import datetime
 import json
-import unittest
 
 import routemaster
 from routemaster import web
 import sqlalchemy
 
-
-class RMTestCase(unittest.TestCase):
-    def setUp(self):
-        routemaster.db.initialize_sqlite_memory()
-        self.app = routemaster.web.app.test_client()
+from routemaster.testing import RMTestCase
 
 
 class TestHello(RMTestCase):
@@ -34,7 +29,7 @@ class TestHello(RMTestCase):
 
 
 class TestJourney(RMTestCase):
-    def test_store_journey(self):
+    def TODO_RENAME_THIS_test_store_journey(self):
         now = datetime.datetime.utcnow()
         then = now - datetime.timedelta(seconds=30)
         data = {
@@ -61,32 +56,21 @@ class TestJourney(RMTestCase):
             ],
         }
         r = self.app.post("/journey", data=json.dumps(data))
-        self.assertTrue(r.status.startswith("2"), msg="non-2xx response")
+        assert r.status.startswith("2")
 
 
-class TestJsonFunctions(RMTestCase):
-    def test_camel(self):
-        self.assertEqual(web.camel("pepperoni_pizza"), "pepperoniPizza")
-        self.assertEqual(web.camel("iphones_are_weird"), "iphonesAreWeird")
-        not_a_string = 5
-        self.assertRaises(TypeError, web.camel, not_a_string)
+class TestPlace(RMTestCase):
+    def test_get_place(self):
+        r = self.app.get("/place/1")
+        assert r.status.startswith("2")
+        self.assertIn("Café Chan", r.get_data(True))
 
-    def test_db_to_json(self):
-        now = datetime.datetime.utcnow()
-        w = routemaster.db.Waypoint(
-            id=5,
-            journey_id=7,
-            time_utc=now,
-            accuracy_m=9.04,
-            latitude=7.3,
-            longitude=2.0,
-            height_m=159255230,
-        )
-        data = json.loads(routemaster.web.db_to_json(w))
-        self.assertEqual(data["id"], 5)
-        self.assertEqual(data["journeyId"], 7)
-        self.assertEqual(data["timeUtc"], now.isoformat())
-        self.assertEqual(data["accuracyM"], 9.04)
-        self.assertEqual(data["latitude"], 7.3)
-        self.assertEqual(data["longitude"], 2.0)
-        self.assertEqual(data["heightM"], 159255230)
+        r = self.app.get("/place/2")
+        assert r.status.startswith("2")
+        self.assertIn("Einstein Bagels", r.get_data(True))
+
+
+class TestUser(RMTestCase):
+    def test_get_user(self):
+        r = self.app.get("/user/1")
+        self.assertIn("Hermann Dorkschneider", r.get_data(True))
