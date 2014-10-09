@@ -19,17 +19,14 @@ def camel(s):
     return re.sub(r"_(.)?", lambda m: (m.group(1) or "").upper(), s)
 
 def to_dict(db_object):
-    return to_list([db_object])[0]
+    """Transform an object from SQLAlchemy into a dict"""
+    obj_dict = {}
+    for column in db_object.__table__.columns:
+        value = getattr(db_object, column.name)
+        if isinstance(value, (datetime.date, datetime.datetime)):
+            value = value.isoformat()
+        obj_dict[camel(column.name)] = value
+    return obj_dict
 
 def to_list(db_objects):
-    """Transform a list of db objects to a list of dicts"""
-    data = []
-    for obj in db_objects:
-        obj_dict = {}
-        for column in obj.__table__.columns:
-            value = getattr(obj, column.name)
-            if isinstance(value, (datetime.date, datetime.datetime)):
-                value = value.isoformat()
-            obj_dict[camel(column.name)] = value
-        data.append(obj_dict)
-    return data
+    return list(map(to_dict, db_objects))
