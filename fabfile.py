@@ -29,5 +29,5 @@ def deploy():
     # Restart services
     run("service nginx restart")
     with settings(warn_only=True):
-        run("stop routemaster-server")
-        run("start routemaster-server")
+        run("service routemaster-server stop")
+    run("service routemaster-server start")
