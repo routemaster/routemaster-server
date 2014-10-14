@@ -26,6 +26,12 @@ class TestDbTransform(RMTestCase):
         not_a_string = 5
         self.assertRaises(TypeError, transform.camel, not_a_string)
 
+    def test_parse_time(self):
+        self.assertEqual(transform.parse_time("2014-10-14T15:03:01.123456"),
+                         datetime.datetime(2014, 10, 14, 15, 3, 1, 123456))
+        self.assertEqual(transform.parse_time("1776-07-04T00:00:00.000000"),
+                         datetime.datetime(1776, 7, 4))
+
     def test_to_dict_and_to_list(self):
         now1 = datetime.datetime.utcnow()
         w1 = Waypoint(

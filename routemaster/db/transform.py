@@ -18,6 +18,9 @@ import re
 def camel(s):
     return re.sub(r"_(.)?", lambda m: (m.group(1) or "").upper(), s)
 
+def parse_time(time_utc):
+    return datetime.datetime.strptime(time_utc, "%Y-%m-%dT%H:%M:%S.%f")
+
 def to_dict(db_object):
     """Transform an object from SQLAlchemy into a dict"""
     obj_dict = {}

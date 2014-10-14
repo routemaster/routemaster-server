@@ -25,10 +25,20 @@ from .db.models import Journey
 from .db.models import Place
 from .db.models import Route
 from .db.models import Waypoint
+from .db.transform import parse_time
 from .db.transform import to_dict
 from .db.transform import to_list
 
 app = flask.Flask("routemaster")
+
+def get_account_id(request):
+    """Validate the request's session and return the account id.
+
+    If the session is not valid, an exception will be raised.
+
+    Currently this just returns 1 (the test account) every time.
+    """
+    return 1
 
 def get_or_404(type, **kwargs):
     q = g.db.query(type).filter_by(**kwargs).first()
@@ -74,11 +84,12 @@ def hello():
 @json_response
 def store_journey():
     data = request.json
+    account_id = get_account_id(request)
     journey = Journey(
-        start_time_utc=data['startTimeUtc'],
-        end_time_utc=data['endTimeUtc'],
-        start_place_id=data['startPlaceId'],
-        end_place_id=data['endPlaceId'],
+        start_time_utc=parse_time(data['startTimeUtc']),
+        end_time_utc=parse_time(data['endTimeUtc']),
+        start_place_id=data.get('startPlaceId', None),
+        end_place_id=data.get('endPlaceId', None),
     )
     g.db.add(journey)
 
@@ -86,11 +97,11 @@ def store_journey():
     for w in data['waypoints']:
         waypoint = Waypoint(
             journey=journey,
-            time_utc=w['timeUtc'],
+            time_utc=parse_time(w['timeUtc']),
             accuracy_m=w['accuracyM'],
             latitude=w['latitude'],
             longitude=w['longitude'],
-            height_m=w['height_m'],
+            height_m=w['heightM'],
         )
         g.db.add(waypoint)
         waypoints.append(waypoint)

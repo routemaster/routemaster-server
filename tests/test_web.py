@@ -35,20 +35,18 @@ class TestHello(RMTestCase):
 
 
 class TestJourney(RMTestCase):
-    def TODO_RENAME_THIS_test_store_journey(self):
+    def test_store_and_get_journey(self):
         now = datetime.datetime.utcnow()
         then = now - datetime.timedelta(seconds=30)
         data = {
-            "userId": 1,
             "startTimeUtc": then.isoformat(),
             "endTimeUtc": now.isoformat(),
-            "distanceM": 5,
-            "efficiency": 20,
+            "visibility": "private",
             "waypoints": [
                 {
                     "timeUtc": then.isoformat(),
                     "accuracyM": 2.71,
-                    "latitude": 3.14159,
+                    "latitude": 3.14160,
                     "longitude": 1.618,
                     "heightM": 10,
                 },
@@ -61,8 +59,13 @@ class TestJourney(RMTestCase):
                 },
             ],
         }
-        r = self.app.post("/journey", data=json.dumps(data))
+        r = self.app.post("/journey", data=json.dumps(data),
+                          content_type="application/json", charset="utf-8")
         assert r.status.startswith("2")
+
+        r = self.app.get("/journey/1")
+        assert r.status.startswith("2")
+        self.assertIn(then.isoformat(), r.get_data(True))
 
 
 class TestPlace(RMTestCase):
