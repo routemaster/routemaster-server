@@ -4,6 +4,10 @@
     $ env/bin/pip install -e .
     $ env/bin/debug-server.py /tmp/routemaster-db
 
+To run the tests
+
+    $ env/bin/python -m unittest
+
 # Deploying to routemaster.lumeh.org
 
 Install Fabric on your system and run
