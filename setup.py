@@ -9,6 +9,7 @@ setup(
     ],
     packages=[
         'routemaster',
+        'routemaster.db',
     ],
     scripts=[
         'debug-server.py',

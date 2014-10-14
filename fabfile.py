@@ -20,6 +20,7 @@ def deploy():
     for file in files:
         put(file, "/home/rmserver/routemaster/")
     with cd("/home/rmserver/routemaster"):
+        run("pip3 uninstall --quiet --yes rm-server")
         run("pip3 install --quiet .")
 
     # Copy configurations
