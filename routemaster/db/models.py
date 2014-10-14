@@ -27,12 +27,29 @@ from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
 
+class Account(Base):
+    """A person who uses RouteMaster"""
+    __tablename__ = "account"
+    id = Column(Integer, primary_key=True)
+    name = Column(String)
+    email = Column(String)
+    creation_time_utc = Column(DateTime, default=datetime.datetime.utcnow)
+    last_login_time_utc = Column(DateTime)
+    total_distance = Column(Integer, default=0)
+    journeys = relationship("Journey", back_populates="account")
+    external_id = Column(String)
+
+    def __repr__(self):
+        return ("<Account id={s.id} name={s.name!r} "
+                "external_id={s.external_id!r}>"
+                .format(s=self))
+
 class Journey(Base):
     """A particular instance of walking from one Place to another"""
     __tablename__ = "journey"
     id = Column(Integer, primary_key=True)
-    user = relationship("User", back_populates="journeys")
-    user_id = Column(Integer, ForeignKey("user.id"))
+    account = relationship("Account", back_populates="journeys")
+    account_id = Column(Integer, ForeignKey("account.id"))
     visibility = Column(Enum("public", "friends", "private"))
     start_time_utc = Column(DateTime)
     end_time_utc = Column(DateTime)
@@ -45,7 +62,7 @@ class Journey(Base):
     waypoints = relationship("Waypoint", back_populates="journey")
 
     def __repr__(self):
-        return ("<Journey id={s.id} user={s.user!r} "
+        return ("<Journey id={s.id} account={s.account!r} "
                 "start_time_utc={s.start_time_utc!r}>"
                 .format(s=self))
 
@@ -76,22 +93,6 @@ class Route(Base):
     def __repr__(self):
         return ("<Route id={s.id} start_place={s.start_place!r} "
                 "end_place={s.end_place!r}>"
-                .format(s=self))
-
-class User(Base):
-    """A person who uses RouteMaster"""
-    __tablename__ = "user"
-    id = Column(Integer, primary_key=True)
-    name = Column(String)
-    email = Column(String)
-    creation_time_utc = Column(DateTime, default=datetime.datetime.utcnow)
-    last_login_time_utc = Column(DateTime)
-    total_distance = Column(Integer, default=0)
-    journeys = relationship("Journey", back_populates="user")
-    external_id = Column(String)
-
-    def __repr__(self):
-        return ("<User id={s.id} name={s.name!r} external_id={s.external_id!r}>"
                 .format(s=self))
 
 class Waypoint(Base):

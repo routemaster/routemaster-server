@@ -20,10 +20,10 @@ from flask import g
 from flask import request
 
 from .db import Session
+from .db.models import Account
 from .db.models import Journey
 from .db.models import Place
 from .db.models import Route
-from .db.models import User
 from .db.models import Waypoint
 from .db.transform import to_dict
 from .db.transform import to_list
@@ -51,6 +51,19 @@ def setup_db_session():
     g.db = Session()
 
 
+@app.route("/account/<int:aid>")
+@json_response
+def get_account(aid):
+    return to_dict(get_or_404(Account, id=aid))
+
+@app.route("/account/<int:aid>/recent")
+@json_response
+def get_account_recent(aid):
+    query = (g.db.query(Journey).filter_by(account_id=aid)
+             .order_by(desc(Journey.start_time_utc)))
+    return to_list(query.all())
+
+
 @app.route("/hello")
 @json_response
 def hello():
@@ -62,7 +75,6 @@ def hello():
 def store_journey():
     data = request.json
     journey = Journey(
-        user_id=data['userId'],
         start_time_utc=data['startTimeUtc'],
         end_time_utc=data['endTimeUtc'],
         start_place_id=data['startPlaceId'],
@@ -111,16 +123,3 @@ def get_place(pid):
 @json_response
 def get_route(rid):
     return to_dict(get_or_404(Route, id=rid))
-
-
-@app.route("/user/<int:uid>")
-@json_response
-def get_user(uid):
-    return to_dict(get_or_404(User, id=uid))
-
-@app.route("/user/<int:uid>/recent")
-@json_response
-def get_user_recent_journeys(uid):
-    query = (g.db.query(Journey).filter_by(user_id=uid)
-             .order_by(desc(Journey.start_time_utc)))
-    return to_list(query.all())

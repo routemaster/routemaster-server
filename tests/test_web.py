@@ -22,6 +22,12 @@ import sqlalchemy
 from routemaster.testing import RMTestCase
 
 
+class TestAccount(RMTestCase):
+    def test_get_account(self):
+        r = self.app.get("/account/1")
+        self.assertIn("Hermann Dorkschneider", r.get_data(True))
+
+
 class TestHello(RMTestCase):
     def test_hello(self):
         r = self.app.get("/hello")
@@ -68,9 +74,3 @@ class TestPlace(RMTestCase):
         r = self.app.get("/place/2")
         assert r.status.startswith("2")
         self.assertIn("Einstein Bagels", r.get_data(True))
-
-
-class TestUser(RMTestCase):
-    def test_get_user(self):
-        r = self.app.get("/user/1")
-        self.assertIn("Hermann Dorkschneider", r.get_data(True))
