@@ -20,15 +20,25 @@ from flask import g
 from flask import request
 
 from .db import Session
+from .db.models import Account
 from .db.models import Journey
 from .db.models import Place
 from .db.models import Route
-from .db.models import User
 from .db.models import Waypoint
+from .db.transform import parse_time
 from .db.transform import to_dict
 from .db.transform import to_list
 
 app = flask.Flask("routemaster")
+
+def get_account_id(request):
+    """Validate the request's session and return the account id.
+
+    If the session is not valid, an exception will be raised.
+
+    Currently this just returns 1 (the test account) every time.
+    """
+    return 1
 
 def get_or_404(type, **kwargs):
     q = g.db.query(type).filter_by(**kwargs).first()
@@ -51,6 +61,19 @@ def setup_db_session():
     g.db = Session()
 
 
+@app.route("/account/<int:aid>")
+@json_response
+def get_account(aid):
+    return to_dict(get_or_404(Account, id=aid))
+
+@app.route("/account/<int:aid>/recent")
+@json_response
+def get_account_recent(aid):
+    query = (g.db.query(Journey).filter_by(account_id=aid)
+             .order_by(desc(Journey.start_time_utc)))
+    return to_list(query.all())
+
+
 @app.route("/hello")
 @json_response
 def hello():
@@ -61,12 +84,14 @@ def hello():
 @json_response
 def store_journey():
     data = request.json
+    account_id = get_account_id(request)
     journey = Journey(
-        user_id=data['userId'],
-        start_time_utc=data['startTimeUtc'],
-        end_time_utc=data['endTimeUtc'],
-        start_place_id=data['startPlaceId'],
-        end_place_id=data['endPlaceId'],
+        account_id=account_id,
+        visibility=data['visibility'],
+        start_time_utc=parse_time(data['startTimeUtc']),
+        end_time_utc=parse_time(data['endTimeUtc']),
+        start_place_id=data.get('startPlaceId', None),
+        end_place_id=data.get('endPlaceId', None),
     )
     g.db.add(journey)
 
@@ -74,11 +99,11 @@ def store_journey():
     for w in data['waypoints']:
         waypoint = Waypoint(
             journey=journey,
-            time_utc=w['timeUtc'],
+            time_utc=parse_time(w['timeUtc']),
             accuracy_m=w['accuracyM'],
             latitude=w['latitude'],
             longitude=w['longitude'],
-            height_m=w['height_m'],
+            height_m=w['heightM'],
         )
         g.db.add(waypoint)
         waypoints.append(waypoint)
@@ -98,7 +123,10 @@ def store_journey():
 @app.route("/journey/<int:jid>")
 @json_response
 def get_journey(jid):
-    return to_dict(get_or_404(Journey, id=jid))
+    journey = get_or_404(Journey, id=jid)
+    journey_dict = to_dict(get_or_404(Journey, id=jid))
+    journey_dict['waypoints'] = to_list(journey.waypoints)
+    return journey_dict
 
 
 @app.route("/place/<int:pid>")
@@ -111,16 +139,3 @@ def get_place(pid):
 @json_response
 def get_route(rid):
     return to_dict(get_or_404(Route, id=rid))
-
-
-@app.route("/user/<int:uid>")
-@json_response
-def get_user(uid):
-    return to_dict(get_or_404(User, id=uid))
-
-@app.route("/user/<int:uid>/recent")
-@json_response
-def get_user_recent_journeys(uid):
-    query = (g.db.query(Journey).filter_by(user_id=uid)
-             .order_by(desc(Journey.start_time_utc)))
-    return to_list(query.all())

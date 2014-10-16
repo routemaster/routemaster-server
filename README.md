@@ -4,6 +4,10 @@
     $ env/bin/pip install -e .
     $ env/bin/debug-server.py /tmp/routemaster-db
 
+To run the tests
+
+    $ env/bin/python -m unittest
+
 # Deploying to routemaster.lumeh.org
 
 Install Fabric on your system and run
@@ -33,11 +37,11 @@ use to determine how certain requests are handled.
 
 *   `GET /route/<int:id>`
 
-*   `GET /user/<int:id>`
+*   `GET /account/<int:id>`
 
-*   `GET /user/<int:id>/journeys`
+*   `GET /account/<int:id>/journeys`
 
-    Returns a list of the user's recent public **Journeys**.
+    Returns a list of the account's recent public **Journeys**.
 
 ## Storing data
 
@@ -62,7 +66,7 @@ use to determine how certain requests are handled.
           ]
         }
 
-*   `POST /user` – create a new user ?
+*   `POST /account` – create a new account ?
 
 # Scoring
 

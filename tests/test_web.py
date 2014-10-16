@@ -22,6 +22,12 @@ import sqlalchemy
 from routemaster.testing import RMTestCase
 
 
+class TestAccount(RMTestCase):
+    def test_get_account(self):
+        r = self.app.get("/account/1")
+        self.assertIn("Hermann Dorkschneider", r.get_data(True))
+
+
 class TestHello(RMTestCase):
     def test_hello(self):
         r = self.app.get("/hello")
@@ -29,20 +35,18 @@ class TestHello(RMTestCase):
 
 
 class TestJourney(RMTestCase):
-    def TODO_RENAME_THIS_test_store_journey(self):
+    def test_store_and_get_journey(self):
         now = datetime.datetime.utcnow()
         then = now - datetime.timedelta(seconds=30)
         data = {
-            "userId": 1,
             "startTimeUtc": then.isoformat(),
             "endTimeUtc": now.isoformat(),
-            "distanceM": 5,
-            "efficiency": 20,
+            "visibility": "private",
             "waypoints": [
                 {
                     "timeUtc": then.isoformat(),
                     "accuracyM": 2.71,
-                    "latitude": 3.14159,
+                    "latitude": 3.1416,
                     "longitude": 1.618,
                     "heightM": 10,
                 },
@@ -55,8 +59,19 @@ class TestJourney(RMTestCase):
                 },
             ],
         }
-        r = self.app.post("/journey", data=json.dumps(data))
+        r = self.app.post("/journey", data=json.dumps(data),
+                          content_type="application/json", charset="utf-8")
         assert r.status.startswith("2")
+
+        r = self.app.get("/journey/1")
+        assert r.status.startswith("2")
+        data = r.get_data(True)
+        self.assertIn(then.isoformat(), data)
+        self.assertIn("private", data)
+        # Make sure it includes the waypoints
+        self.assertIn("waypoints", data)
+        self.assertIn("3.14159", data)
+        self.assertIn("3.1416", data)
 
 
 class TestPlace(RMTestCase):
@@ -68,9 +83,3 @@ class TestPlace(RMTestCase):
         r = self.app.get("/place/2")
         assert r.status.startswith("2")
         self.assertIn("Einstein Bagels", r.get_data(True))
-
-
-class TestUser(RMTestCase):
-    def test_get_user(self):
-        r = self.app.get("/user/1")
-        self.assertIn("Hermann Dorkschneider", r.get_data(True))

@@ -48,7 +48,7 @@ def _populate():
     einstein = models.Place(name="Einstein Bagels",
                             latitude=29.64814,
                             longitude=-82.34524)
-    hermann = models.User(name="Hermann Dorkschneider",
+    hermann = models.Account(name="Hermann Dorkschneider",
                           email="fakeaddress@lumeh.org")
     db.add(café_chan)
     db.add(einstein)
@@ -56,7 +56,7 @@ def _populate():
     db.commit()
     logger.info("Created Place {}".format(café_chan))
     logger.info("Created Place {}".format(einstein))
-    logger.info("Created User {}".format(hermann))
+    logger.info("Created Account {}".format(hermann))
 
 def initialize_sqlite(database_file):
     """Initialize this module to use an on-disk sqlite database."""
