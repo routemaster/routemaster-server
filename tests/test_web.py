@@ -46,7 +46,7 @@ class TestJourney(RMTestCase):
                 {
                     "timeUtc": then.isoformat(),
                     "accuracyM": 2.71,
-                    "latitude": 3.14160,
+                    "latitude": 3.1416,
                     "longitude": 1.618,
                     "heightM": 10,
                 },
@@ -65,7 +65,13 @@ class TestJourney(RMTestCase):
 
         r = self.app.get("/journey/1")
         assert r.status.startswith("2")
-        self.assertIn(then.isoformat(), r.get_data(True))
+        data = r.get_data(True)
+        self.assertIn(then.isoformat(), data)
+        self.assertIn("private", data)
+        # Make sure it includes the waypoints
+        self.assertIn("waypoints", data)
+        self.assertIn("3.14159", data)
+        self.assertIn("3.1416", data)
 
 
 class TestPlace(RMTestCase):

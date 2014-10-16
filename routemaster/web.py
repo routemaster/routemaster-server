@@ -86,6 +86,8 @@ def store_journey():
     data = request.json
     account_id = get_account_id(request)
     journey = Journey(
+        account_id=account_id,
+        visibility=data['visibility'],
         start_time_utc=parse_time(data['startTimeUtc']),
         end_time_utc=parse_time(data['endTimeUtc']),
         start_place_id=data.get('startPlaceId', None),
@@ -121,7 +123,10 @@ def store_journey():
 @app.route("/journey/<int:jid>")
 @json_response
 def get_journey(jid):
-    return to_dict(get_or_404(Journey, id=jid))
+    journey = get_or_404(Journey, id=jid)
+    journey_dict = to_dict(get_or_404(Journey, id=jid))
+    journey_dict['waypoints'] = to_list(journey.waypoints)
+    return journey_dict
 
 
 @app.route("/place/<int:pid>")
