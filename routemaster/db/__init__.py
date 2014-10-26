@@ -45,7 +45,7 @@ def _populate():
     café_chan = models.Place(name="Café Chan",
                              latitude=29.65782,
                              longitude=-82.34215)
-    einstein = models.Place(name="Einstein Bagels",
+    einstein = models.Place(name="Einstein Bros. Bagels",
                             latitude=29.64814,
                             longitude=-82.34524)
     hermann = models.Account(name="Hermann Dorkschneider",
