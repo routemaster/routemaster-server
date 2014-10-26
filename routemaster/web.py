@@ -18,6 +18,7 @@ import json
 import flask
 from flask import g
 from flask import request
+from sqlalchemy import desc
 
 from .db import Session
 from .db.models import Account
@@ -89,9 +90,9 @@ def store_journey():
         account_id=account_id,
         visibility=data['visibility'],
         start_time_utc=parse_time(data['startTimeUtc']),
-        end_time_utc=parse_time(data['endTimeUtc']),
+        stop_time_utc=parse_time(data['stopTimeUtc']),
         start_place_id=data.get('startPlaceId', None),
-        end_place_id=data.get('endPlaceId', None),
+        stop_place_id=data.get('stopPlaceId', None),
     )
     g.db.add(journey)
 

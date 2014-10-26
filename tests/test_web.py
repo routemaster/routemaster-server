@@ -21,11 +21,53 @@ import sqlalchemy
 
 from routemaster.testing import RMTestCase
 
+def post_journey(app, account_id=1, start_datetime=None, stop_datetime=None):
+    if start_datetime is None and stop_datetime is None:
+        start_datetime = datetime.datetime.utcnow()
+        stop_datetime = start_datetime + datetime.timedelta(seconds=30)
+
+    data = {
+        "startTimeUtc": start_datetime.isoformat(),
+        "stopTimeUtc": stop_datetime.isoformat(),
+        "visibility": "private",
+        "waypoints": [
+            {
+                "timeUtc": start_datetime.isoformat(),
+                "accuracyM": 2.71,
+                "latitude": 3.1416,
+                "longitude": 1.618,
+                "heightM": 10,
+            },
+            {
+                "timeUtc": stop_datetime.isoformat(),
+                "accuracyM": 2.71,
+                "latitude": 3.14159,
+                "longitude": 1.618,
+                "heightM": 10,
+            },
+        ],
+    }
+    r = app.post("/journey", data=json.dumps(data),
+                 content_type="application/json", charset="utf-8")
+    assert r.status.startswith("2")
+    data = json.loads(r.get_data(True))
+    return int(data["id"])
 
 class TestAccount(RMTestCase):
+    test_account_id = 1
+
+    def setUp(self):
+        super().setUp()
+        post_journey(self.app, account_id=self.test_account_id)
+
     def test_get_account(self):
-        r = self.app.get("/account/1")
+        r = self.app.get("/account/%s" % self.test_account_id)
         self.assertIn("Hermann Dorkschneider", r.get_data(True))
+
+    def test_get_account_recent(self):
+        r = self.app.get("/account/%s/recent" % self.test_account_id)
+        self.assertIn("startTimeUtc", r.get_data(True))
+        self.assertIn("stopPlaceId", r.get_data(True))
 
 
 class TestHello(RMTestCase):
@@ -38,32 +80,9 @@ class TestJourney(RMTestCase):
     def test_store_and_get_journey(self):
         now = datetime.datetime.utcnow()
         then = now - datetime.timedelta(seconds=30)
-        data = {
-            "startTimeUtc": then.isoformat(),
-            "endTimeUtc": now.isoformat(),
-            "visibility": "private",
-            "waypoints": [
-                {
-                    "timeUtc": then.isoformat(),
-                    "accuracyM": 2.71,
-                    "latitude": 3.1416,
-                    "longitude": 1.618,
-                    "heightM": 10,
-                },
-                {
-                    "timeUtc": now.isoformat(),
-                    "accuracyM": 2.71,
-                    "latitude": 3.14159,
-                    "longitude": 1.618,
-                    "heightM": 10,
-                },
-            ],
-        }
-        r = self.app.post("/journey", data=json.dumps(data),
-                          content_type="application/json", charset="utf-8")
-        assert r.status.startswith("2")
+        jid = post_journey(self.app, start_datetime=then, stop_datetime=now)
 
-        r = self.app.get("/journey/1")
+        r = self.app.get("/journey/%s" % jid)
         assert r.status.startswith("2")
         data = r.get_data(True)
         self.assertIn(then.isoformat(), data)

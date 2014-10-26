@@ -52,13 +52,13 @@ class Journey(Base):
     account_id = Column(Integer, ForeignKey("account.id"))
     visibility = Column(Enum("public", "friends", "private"))
     start_time_utc = Column(DateTime)
-    end_time_utc = Column(DateTime)
+    stop_time_utc = Column(DateTime)
     distance_m = Column(Integer)
     efficiency = Column(Integer)
     start_place_id = Column(Integer, ForeignKey("place.id"))
     start_place = relationship("Place", foreign_keys=start_place_id)
-    end_place_id = Column(Integer, ForeignKey("place.id"))
-    end_place = relationship("Place", foreign_keys=end_place_id)
+    stop_place_id = Column(Integer, ForeignKey("place.id"))
+    stop_place = relationship("Place", foreign_keys=stop_place_id)
     waypoints = relationship("Waypoint", back_populates="journey")
 
     def __repr__(self):
@@ -67,7 +67,7 @@ class Journey(Base):
                 .format(s=self))
 
 class Place(Base):
-    """A named place on the map from which a Journey can start or end"""
+    """A named place on the map from which a Journey can start or stop"""
     __tablename__ = "place"
     id = Column(Integer, primary_key=True)
     name = Column(String)
@@ -87,12 +87,12 @@ class Route(Base):
     id = Column(Integer, primary_key=True)
     start_place_id = Column(Integer, ForeignKey("place.id"))
     start_place = relationship("Place", foreign_keys=start_place_id)
-    end_place_id = Column(Integer, ForeignKey("place.id"))
-    end_place = relationship("Place", foreign_keys=end_place_id)
+    stop_place_id = Column(Integer, ForeignKey("place.id"))
+    stop_place = relationship("Place", foreign_keys=stop_place_id)
 
     def __repr__(self):
         return ("<Route id={s.id} start_place={s.start_place!r} "
-                "end_place={s.end_place!r}>"
+                "stop_place={s.stop_place!r}>"
                 .format(s=self))
 
 class Waypoint(Base):
