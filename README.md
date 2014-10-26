@@ -51,9 +51,9 @@ use to determine how certain requests are handled.
 
         {
           "startTimeUtc": ...,
-          "endTimeUtc": ...,
+          "stopTimeUtc": ...,
           "startPlaceId": ...,
-          "endPlaceId": ...,
+          "stopPlaceId": ...,
           "waypoints": [
             {
               "timeUtc": ...,
@@ -71,7 +71,7 @@ use to determine how certain requests are handled.
 # Scoring
 
 The efficiency score is an integer from 0 to 100. We first calculate the
-straight-line distance between the starting and ending locations. Then we
+straight-line distance between the starting and stopping locations. Then we
 calculate the distance the user walked by summing the distances between adjacent
 recorded waypoints. The efficiency score is then
 

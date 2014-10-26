@@ -28,7 +28,7 @@ def post_journey(app, account_id=1, start_datetime=None, stop_datetime=None):
 
     data = {
         "startTimeUtc": start_datetime.isoformat(),
-        "endTimeUtc": stop_datetime.isoformat(),
+        "stopTimeUtc": stop_datetime.isoformat(),
         "visibility": "private",
         "waypoints": [
             {
@@ -67,7 +67,7 @@ class TestAccount(RMTestCase):
     def test_get_account_recent(self):
         r = self.app.get("/account/%s/recent" % self.test_account_id)
         self.assertIn("startTimeUtc", r.get_data(True))
-        self.assertIn("endPlaceId", r.get_data(True))
+        self.assertIn("stopPlaceId", r.get_data(True))
 
 
 class TestHello(RMTestCase):
