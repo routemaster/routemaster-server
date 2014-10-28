@@ -124,10 +124,7 @@ def store_journey():
 @app.route("/journey/<int:jid>")
 @json_response
 def get_journey(jid):
-    journey = get_or_404(Journey, id=jid)
-    journey_dict = to_dict(get_or_404(Journey, id=jid))
-    journey_dict['waypoints'] = to_list(journey.waypoints)
-    return journey_dict
+    return to_dict(get_or_404(Journey, id=jid))
 
 
 @app.route("/place/<int:pid>")

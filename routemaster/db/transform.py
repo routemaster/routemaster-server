@@ -29,6 +29,10 @@ def to_dict(db_object):
         if isinstance(value, (datetime.date, datetime.datetime)):
             value = value.isoformat()
         obj_dict[camel(column.name)] = value
+    for relationship in getattr(db_object, "_to_dict_attrs", []):
+        obj_dict[relationship] = to_dict(getattr(db_object, relationship))
+    for relationship in getattr(db_object, "_to_list_attrs", []):
+        obj_dict[relationship] = to_list(getattr(db_object, relationship))
     return obj_dict
 
 def to_list(db_objects):

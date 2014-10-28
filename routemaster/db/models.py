@@ -61,6 +61,8 @@ class Journey(Base):
     stop_place = relationship("Place", foreign_keys=stop_place_id)
     waypoints = relationship("Waypoint", back_populates="journey")
 
+    _to_list_attrs = ['waypoints']
+
     def __repr__(self):
         return ("<Journey id={s.id} account={s.account!r} "
                 "start_time_utc={s.start_time_utc!r}>"
