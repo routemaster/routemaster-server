@@ -101,4 +101,4 @@ class TestPlace(RMTestCase):
 
         r = self.app.get("/place/2")
         assert r.status.startswith("2")
-        self.assertIn("Einstein Bagels", r.get_data(True))
+        self.assertIn("Einstein Bros. Bagels", r.get_data(True))
