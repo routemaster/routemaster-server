@@ -68,6 +68,7 @@ class TestAccount(RMTestCase):
         r = self.app.get("/account/%s/recent" % self.test_account_id)
         self.assertIn("startTimeUtc", r.get_data(True))
         self.assertIn("stopPlaceId", r.get_data(True))
+        self.assertIn("waypoints", r.get_data(True))
 
 
 class TestHello(RMTestCase):

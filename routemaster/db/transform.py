@@ -15,6 +15,8 @@
 import datetime
 import re
 
+from .models import Journey
+
 def camel(s):
     return re.sub(r"_(.)?", lambda m: (m.group(1) or "").upper(), s)
 
@@ -29,6 +31,8 @@ def to_dict(db_object):
         if isinstance(value, (datetime.date, datetime.datetime)):
             value = value.isoformat()
         obj_dict[camel(column.name)] = value
+    if isinstance(db_object, Journey):
+        obj_dict["waypoints"] = to_list(db_object.waypoints)
     return obj_dict
 
 def to_list(db_objects):
