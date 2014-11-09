@@ -24,7 +24,6 @@ from .algorithm import journey_scores
 from .db import Session
 from .db.models import Account
 from .db.models import Journey
-from .db.models import Place
 from .db.models import Route
 from .db.models import Waypoint
 from .db.transform import parse_time
@@ -38,9 +37,9 @@ def get_account_id(request):
 
     If the session is not valid, an exception will be raised.
 
-    Currently this just returns 1 (the test account) every time.
+    Currently this just returns "test" (the test account) every time.
     """
-    return 1
+    return "test"
 
 def get_or_404(type, **kwargs):
     q = g.db.query(type).filter_by(**kwargs).first()
@@ -63,12 +62,12 @@ def setup_db_session():
     g.db = Session()
 
 
-@app.route("/account/<int:aid>")
+@app.route("/account/<aid>")
 @json_response
 def get_account(aid):
     return to_dict(get_or_404(Account, id=aid))
 
-@app.route("/account/<int:aid>/recent")
+@app.route("/account/<aid>/recent")
 @json_response
 def get_account_recent(aid):
     query = (g.db.query(Journey).filter_by(account_id=aid)
@@ -88,6 +87,7 @@ def store_journey():
     data = request.json
 
     journey = Journey(
+        id=data['id'],
         account_id=get_account_id(request),
         visibility=data['visibility'],
         start_time_utc=parse_time(data['startTimeUtc']),
@@ -119,16 +119,10 @@ def store_journey():
     g.db.commit()
     return to_dict(journey)
 
-@app.route("/journey/<int:jid>")
+@app.route("/journey/<jid>")
 @json_response
 def get_journey(jid):
     return to_dict(get_or_404(Journey, id=jid))
-
-
-@app.route("/place/<int:pid>")
-@json_response
-def get_place(pid):
-    return to_dict(get_or_404(Place, id=pid))
 
 
 @app.route("/route/<int:rid>")

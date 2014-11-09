@@ -25,21 +25,15 @@ use to determine how certain requests are handled.
 
 ## Fetching data
 
-*   `GET /journey/<int:id>`
+*   `GET /journey/<id>`
 
     Can return 403 if the **Journey** is not public.
 
-*   `GET /place/<int:id>`
-
-    Includes a list of high scoring journeys.
-
-*   `GET /place/nearby/<float:latitude>,<float:longitude>`
-
 *   `GET /route/<int:id>`
 
-*   `GET /account/<int:id>`
+*   `GET /account/<id>`
 
-*   `GET /account/<int:id>/journeys`
+*   `GET /account/<id>/recent`
 
     Returns a list of the account's recent public **Journeys**.
 
