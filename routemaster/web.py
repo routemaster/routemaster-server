@@ -20,6 +20,7 @@ from flask import g
 from flask import request
 from sqlalchemy import desc
 
+from .algorithm import journey_scores
 from .db import Session
 from .db.models import Account
 from .db.models import Journey
@@ -85,9 +86,9 @@ def hello():
 @json_response
 def store_journey():
     data = request.json
-    account_id = get_account_id(request)
+
     journey = Journey(
-        account_id=account_id,
+        account_id=get_account_id(request),
         visibility=data['visibility'],
         start_time_utc=parse_time(data['startTimeUtc']),
         stop_time_utc=parse_time(data['stopTimeUtc']),
@@ -109,14 +110,11 @@ def store_journey():
         g.db.add(waypoint)
         waypoints.append(waypoint)
 
-    if len(waypoints) < 3:
-        # return 400 Bad Request?
+    if len(waypoints) < 2:
+        # TODO: return 400 Bad Request?
         ...
-    g.db.commit()
 
-    # TODO: Calculate journey scores and distance
-    for w1, w2 in zip(waypoints, waypoints[1:]):
-        ...
+    journey.efficiency, journey.distance_m = journey_scores(*waypoints)
 
     g.db.commit()
     return to_dict(journey)

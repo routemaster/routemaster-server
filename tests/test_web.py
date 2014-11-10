@@ -92,6 +92,7 @@ class TestJourney(RMTestCase):
         self.assertIn("waypoints", data)
         self.assertIn("3.14159", data)
         self.assertIn("3.1416", data)
+        self.assertIn("1.107126311125143", data)
 
 
 class TestPlace(RMTestCase):
