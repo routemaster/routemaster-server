@@ -29,7 +29,7 @@ def post_journey(app, account_id=1, start_datetime=None, stop_datetime=None):
     data = {
         "startTimeUtc": start_datetime.isoformat(),
         "stopTimeUtc": stop_datetime.isoformat(),
-        "visibility": "private",
+        "visibility": "PRIvAtE",
         "waypoints": [
             {
                 "timeUtc": start_datetime.isoformat(),
@@ -87,7 +87,7 @@ class TestJourney(RMTestCase):
         assert r.status.startswith("2")
         data = r.get_data(True)
         self.assertIn(then.isoformat(), data)
-        self.assertIn("private", data)
+        self.assertIn("PRIVATE", data)
         # Make sure it includes the waypoints
         self.assertIn("waypoints", data)
         self.assertIn("3.14159", data)
