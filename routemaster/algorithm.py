@@ -5,7 +5,7 @@ import operator
 # http://nssdc.gsfc.nasa.gov/planetary/factsheet/earthfact.html
 EARTH_RADIUS_M = 6371000
 
-def journey_scores(*waypoints):
+def journey_scores(waypoints):
     traveled_m = path_length_m(*waypoints)
     straight_line_m = path_length_m(waypoints[0], waypoints[-1])
     try:

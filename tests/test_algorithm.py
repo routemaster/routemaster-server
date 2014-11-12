@@ -38,10 +38,10 @@ class TestAlgorithms(RMTestCase):
                           algorithm.distance_between_m(*self.ll12)))
 
     def test_journey_scores(self):
-        self.assertEqual(algorithm.journey_scores(self.w0, self.w0),
+        self.assertEqual(algorithm.journey_scores([self.w0, self.w0]),
                          (0, 0.0))
-        self.assertEqual(algorithm.journey_scores(self.w1, self.w2)[0], 100)
-        self.assertEqual(int(algorithm.journey_scores(self.w1, self.w2)[1]),
+        self.assertEqual(algorithm.journey_scores([self.w1, self.w2])[0], 100)
+        self.assertEqual(int(algorithm.journey_scores([self.w1, self.w2])[1]),
                          self.distance12)
-        self.assertEqual(algorithm.journey_scores(self.w0, self.w1, self.w2)[0],
+        self.assertEqual(algorithm.journey_scores([self.w0, self.w1, self.w2])[0],
                          self.efficiency012)

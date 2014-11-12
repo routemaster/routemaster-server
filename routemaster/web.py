@@ -114,7 +114,7 @@ def store_journey():
         # TODO: return 400 Bad Request?
         ...
 
-    journey.efficiency, journey.distance_m = journey_scores(*waypoints)
+    journey.efficiency, journey.distance_m = journey_scores(waypoints)
 
     g.db.commit()
     return to_dict(journey)
