@@ -46,11 +46,17 @@ class Account(Base):
 
 class Journey(Base):
     """A particular instance of walking from one Place to another"""
+
+    def __init__(self, *args, **kwargs):
+        if "visibility" in kwargs:
+            kwargs["visibility"] = kwargs["visibility"].upper()
+        super().__init__(*args, **kwargs)
+
     __tablename__ = "journey"
     id = Column(Integer, primary_key=True)
     account = relationship("Account", back_populates="journeys")
     account_id = Column(Integer, ForeignKey("account.id"))
-    visibility = Column(Enum("public", "friends", "private"))
+    visibility = Column(Enum("PUBLIC", "FRIENDS", "PRIVATE"))
     start_time_utc = Column(DateTime)
     stop_time_utc = Column(DateTime)
     distance_m = Column(Integer)
