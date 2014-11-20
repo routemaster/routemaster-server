@@ -1,14 +1,16 @@
-# Local setup
+# Usage
+
+## Local setup
 
     $ virtualenv3 env
     $ env/bin/pip install -e .
     $ env/bin/debug-server.py /tmp/routemaster-db
 
-To run the tests
+## Testing
 
     $ env/bin/python -m unittest
 
-# Deploying to routemaster.lumeh.org
+## Deploying to routemaster.lumeh.org
 
 Install Fabric on your system and run
 
@@ -16,26 +18,35 @@ Install Fabric on your system and run
 
 # API
 
-See routemaster/db.py for the definitions of the models.
+See routemaster/db.py for the definitions of the models. Accounts and journeys
+are identified by random [UUIDs](https://docs.python.org/3/library/uuid.html),
+with the exception of the test Account ("Hermann Dörkschneider"), whose id is
+`test`.
 
 ## Sessions
 
-The requests will contain a sessionId header which the server will validate and
-use to determine how certain requests are handled.
+The requests will contain an accountId header which the server will use to
+determine how certain requests are handled.
 
 ## Fetching data
 
-*   `GET /journey/<id>`
+*   `GET /account/<uuid>`
+
+*   `GET /account/<uuid>/recent`
+
+    Returns a list of the account's recent public **Journeys**.
+
+*   `GET /journey/<uuid>`
 
     Can return 403 if the **Journey** is not public.
 
-*   `GET /route/<int:id>`
+*   `GET /route/<int:id>/top`
 
-*   `GET /account/<id>`
+    Returns a list of the top-scoring journeys for the route.
 
-*   `GET /account/<id>/recent`
+*   `GET /route/<int:id>/recent`
 
-    Returns a list of the account's recent public **Journeys**.
+    Returns a list of the most recent journeys for the route.
 
 ## Storing data
 
@@ -44,6 +55,8 @@ use to determine how certain requests are handled.
     Required data:
 
         {
+          "id": ...,
+          "visibility": ...,
           "startTimeUtc": ...,
           "stopTimeUtc": ...,
           "startPlaceId": ...,
