@@ -23,6 +23,7 @@ database.
 """
 import logging
 import os.path
+import uuid
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -42,20 +43,11 @@ def _populate():
     models.Base.metadata.create_all(engine)
     logger.info("Initalized database")
     db = Session()
-    café_chan = models.Place(name="Café Chan",
-                             latitude=29.65782,
-                             longitude=-82.34215)
-    einstein = models.Place(name="Einstein Bros. Bagels",
-                            latitude=29.64814,
-                            longitude=-82.34524)
-    hermann = models.Account(name="Hermann Dorkschneider",
-                          email="fakeaddress@lumeh.org")
-    db.add(café_chan)
-    db.add(einstein)
+    hermann = models.Account(id="test",
+                             name="Hermann Dörkschneider",
+                             email="fakeaddress@lumeh.org")
     db.add(hermann)
     db.commit()
-    logger.info("Created Place {}".format(café_chan))
-    logger.info("Created Place {}".format(einstein))
     logger.info("Created Account {}".format(hermann))
 
 def initialize_sqlite(database_file):
