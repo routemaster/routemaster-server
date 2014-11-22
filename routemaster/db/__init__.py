@@ -21,6 +21,7 @@ so you can safely call them multiple times if you want to.)
 After initializing, create an instance of Session to access the
 database.
 """
+import datetime
 import logging
 import os.path
 import uuid
@@ -43,12 +44,38 @@ def _populate():
     models.Base.metadata.create_all(engine)
     logger.info("Initalized database")
     db = Session()
+
     hermann = models.Account(id="test",
                              name="Hermann Dörkschneider",
                              email="fakeaddress@lumeh.org")
     db.add(hermann)
+
+    journey = models.Journey(id=str(uuid.uuid4()),
+                             account_id="test",
+                             visibility="PUBLIC",
+                             start_time_utc=datetime.datetime.now(),
+                             stop_time_utc=datetime.datetime.now())
+    db.add(journey)
+
+    waypoint1 = models.Waypoint(journey=journey,
+                                time_utc=datetime.datetime.now(),
+                                accuracy_m=2.71,
+                                latitude=3.1416,
+                                longitude=1.618,
+                                height_m=10)
+    db.add(waypoint1)
+
+    waypoint2 = models.Waypoint(journey=journey,
+                                time_utc=datetime.datetime.now(),
+                                accuracy_m=5.1,
+                                latitude=3.1410,
+                                longitude=1.620,
+                                height_m=5)
+    db.add(waypoint2)
+
     db.commit()
-    logger.info("Created Account {}".format(hermann))
+    logger.info("Created test account {}".format(hermann))
+    logger.info("Created test journey {}".format(journey))
 
 def initialize_sqlite(database_file):
     """Initialize this module to use an on-disk sqlite database."""
