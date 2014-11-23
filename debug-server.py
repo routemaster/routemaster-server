@@ -34,6 +34,7 @@ database_file = args['DATABASE_FILE']
 if debug:
     # Enable log messages from SQLAlchemy engine
     logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+    logging.getLogger('routemaster').setLevel(logging.DEBUG)
 
 logger = logging.getLogger()
 

@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import functools
+import logging
 import json
 
 import flask
@@ -30,6 +31,7 @@ from .db.transform import parse_time
 from .db.transform import to_dict
 from .db.transform import to_list
 
+logger = logging.getLogger("routemaster.web")
 app = flask.Flask("routemaster")
 
 def get_account_id(request):
@@ -84,8 +86,8 @@ def hello():
 @app.route("/journey", methods=["POST"])
 @json_response
 def store_journey():
-    data = request.json
-
+    data = request.get_json()
+    logger.debug(data)
     journey = Journey(
         id=data['id'],
         account_id=get_account_id(request),
