@@ -43,11 +43,11 @@ class TestDbTransform(RMTestCase):
             longitude=2.0,
             height_m=159255230,
         )
-        now2 = datetime.datetime.utcnow()
+        time2 = "2014-11-17T00:00:00.000000"
         w2 = Waypoint(
             id=6,
             journey_id=8,
-            time_utc=now2,
+            time_utc=transform.parse_time(time2),
             accuracy_m=10.04,
             latitude=8.3,
             longitude=3.0,
@@ -65,7 +65,7 @@ class TestDbTransform(RMTestCase):
 
         self.assertEqual(d2["id"], 6)
         self.assertEqual(d2["journeyId"], 8)
-        self.assertEqual(d2["timeUtc"], now2.isoformat())
+        self.assertEqual(d2["timeUtc"], time2)
         self.assertEqual(d2["accuracyM"], 10.04)
         self.assertEqual(d2["latitude"], 8.3)
         self.assertEqual(d2["longitude"], 3.0)

@@ -15,11 +15,13 @@
 import datetime
 import re
 
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S.%f"
+
 def camel(s):
     return re.sub(r"_(.)?", lambda m: (m.group(1) or "").upper(), s)
 
 def parse_time(time_utc):
-    return datetime.datetime.strptime(time_utc, "%Y-%m-%dT%H:%M:%S.%f")
+    return datetime.datetime.strptime(time_utc, DATE_FORMAT)
 
 def to_dict(db_object):
     """Transform an object from SQLAlchemy into a dict"""
@@ -27,7 +29,7 @@ def to_dict(db_object):
     for column in db_object.__table__.columns:
         value = getattr(db_object, column.name)
         if isinstance(value, (datetime.date, datetime.datetime)):
-            value = value.isoformat()
+            value = value.strftime(DATE_FORMAT)
         obj_dict[camel(column.name)] = value
     for relationship in getattr(db_object, "_to_dict_attrs", []):
         obj_dict[relationship] = to_dict(getattr(db_object, relationship))
