@@ -32,3 +32,4 @@ def deploy():
     with settings(warn_only=True):
         run("service routemaster-server stop")
     run("service routemaster-server start")
+    # TODO: enable the service?

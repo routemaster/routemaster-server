@@ -35,13 +35,8 @@ logger = logging.getLogger("routemaster.web")
 app = flask.Flask("routemaster")
 
 def get_account_id(request):
-    """Validate the request's session and return the account id.
-
-    If the session is not valid, an exception will be raised.
-
-    Currently this just returns "test" (the test account) every time.
-    """
-    return "test"
+    """Extract the account id from the request headers"""
+    return request.headers.get('RouteMasterAccountId') or "test"
 
 def get_or_404(type, **kwargs):
     q = g.db.query(type).filter_by(**kwargs).first()
